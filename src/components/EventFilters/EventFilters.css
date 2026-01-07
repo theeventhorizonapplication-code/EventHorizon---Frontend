@@ -1,0 +1,99 @@
+.event-filters {
+  margin-bottom: 32px;
+}
+
+.filters-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filters-icon {
+  font-size: 24px;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 50px;
+  border: 2px solid;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.filter-chip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--chip-color);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.filter-chip.active {
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.filter-chip.active::before {
+  opacity: 1;
+}
+
+.filter-chip.inactive {
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.filter-chip.inactive:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.02);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.chip-icon {
+  font-size: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.chip-label {
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .filter-chips {
+    gap: 8px;
+  }
+  
+  .filter-chip {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  
+  .chip-icon {
+    font-size: 16px;
+  }
+}
