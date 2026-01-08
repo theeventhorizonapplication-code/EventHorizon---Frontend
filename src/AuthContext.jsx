@@ -31,7 +31,6 @@ export function AuthProvider({ children }) {
         setUser(data.user);
         setToken(authToken);
       } else {
-        // Token invalid, clear it
         localStorage.removeItem('token');
         setToken(null);
         setUser(null);
