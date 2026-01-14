@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
 export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -10,9 +10,72 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Initialize Google Sign-In
+  useEffect(() => {
+    const initGoogle = () => {
+      if (window.google && window.google.accounts) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleResponse,
+        });
+        
+        window.google.accounts.id.renderButton(
+          document.getElementById('google-signup-btn'),
+          { 
+            theme: 'filled_black', 
+            size: 'large', 
+            width: '100%',
+            text: 'signup_with',
+            shape: 'rectangular'
+          }
+        );
+      }
+    };
+
+    // Wait for Google script to load
+    if (window.google) {
+      initGoogle();
+    } else {
+      const checkGoogle = setInterval(() => {
+        if (window.google) {
+          initGoogle();
+          clearInterval(checkGoogle);
+        }
+      }, 100);
+      
+      // Clear after 5 seconds
+      setTimeout(() => clearInterval(checkGoogle), 5000);
+    }
+  }, []);
+
+  const handleGoogleResponse = async (response) => {
+    setError('');
+    setLoading(true);
+    
+    try {
+      await loginWithGoogle(response.credential);
+      onSuccess?.();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Username validation
+    if (username.length < 3) {
+      setError('Username must be at least 3 characters');
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      setError('Username can only contain letters, numbers, and underscores');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -45,6 +108,15 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
           <p>Join EventHorizon and never miss a gaming event</p>
         </div>
 
+        {/* Google Sign-Up Button */}
+        <div className="google-btn-container">
+          <div id="google-signup-btn"></div>
+        </div>
+
+        <div className="auth-divider">
+          <span>or</span>
+        </div>
+
         <form onSubmit={handleSubmit} className="auth-form">
           {error && <div className="auth-error">{error}</div>}
 
@@ -68,7 +140,10 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Choose a username"
               required
+              minLength={3}
+              maxLength={20}
             />
+            <span className="form-hint">This will be displayed to others</span>
           </div>
 
           <div className="form-group">
