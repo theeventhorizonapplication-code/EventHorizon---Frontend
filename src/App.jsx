@@ -153,6 +153,7 @@ function HomePage({ onAddGame, onSearch, events, games, onSelectEvent }) {
                     className="home-timeline-card"
                     onClick={() => onSelectEvent(event)}
                   >
+                    <span className="htc-date">{formatDate(event.date)}</span>
                     <div className="htc-image">
                       {event.gameImage ? (
                         <img src={event.gameImage} alt="" />
@@ -164,10 +165,9 @@ function HomePage({ onAddGame, onSearch, events, games, onSelectEvent }) {
                       </span>
                     </div>
                     <div className="htc-content">
-  <span className="htc-date">{formatDate(event.date)}</span>
-  <span className="htc-game">{event.gameName || event.game_name}</span>
-  <span className="htc-title">{event.title}</span>
-</div>
+                      <span className="htc-game">{event.gameName || event.game_name}</span>
+                      <span className="htc-title">{event.title}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -252,21 +252,21 @@ function MyGamesPage({ games, events, onSelectGame, onSelectEvent, loadingEvents
       eventDate.setHours(0,0,0,0);
       const diff = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
       
-      if (diff === 0) return { label: 'TODAY', color: '#ef4444' };
-      if (diff === 1) return { label: 'TOMORROW', color: '#f59e0b' };
-      if (diff > 0 && diff <= 7) return { label: `${diff}d`, color: '#a855f7' };
+      if (diff === 0) return { type: 'today', text: 'Event Today!', color: '#22d3ee' };
+      if (diff === 1) return { type: 'tomorrow', text: 'Event Tomorrow', color: '#a78bfa' };
+      if (diff > 0 && diff <= 7) return { type: 'soon', text: `Event in ${diff} days`, color: '#60a5fa' };
     }
     return null;
   };
 
   if (games.length === 0) {
     return (
-      <div className="mygames-page">
-        <div className="empty-state-large">
-          <div className="empty-icon">🎮</div>
+      <div className="mygames-page empty-state">
+        <div className="empty-message">
+          <span className="empty-icon">🎮</span>
           <h2>No games tracked yet</h2>
-          <p>Add some games to start tracking events!</p>
-          <button className="add-btn-large" onClick={onAddGame}>+ Add Game</button>
+          <p>Start by adding some games to track their events</p>
+          <button className="add-btn-large" onClick={onAddGame}>+ Add Your First Game</button>
         </div>
       </div>
     );
@@ -274,25 +274,26 @@ function MyGamesPage({ games, events, onSelectGame, onSelectEvent, loadingEvents
 
   return (
     <div className="mygames-page">
-      <section className="section">
-        <div className="section-header">
-          <h2 className="section-title">Your Games</h2>
-          <button className="section-add-btn" onClick={onAddGame}>+ Add Game</button>
-        </div>
+      {/* Games Grid */}
+      <section className="games-section">
+        <h2 className="section-title">Your Games</h2>
         <div className="games-grid">
           {games.map(game => {
             const status = getGameStatus(game.game_id);
-            const gameData = game.game_data || {};
             return (
-              <div key={game.game_id} className="game-tile" onClick={() => onSelectGame(game)}>
-                <img src={game.game_image || gameData.background_image} alt={game.game_name} />
-                {status && (
-                  <div className="status-badge" style={{ backgroundColor: status.color }}>
-                    {status.label}
-                  </div>
-                )}
-                <div className="game-tile-overlay">
-                  <span className="game-title">{game.game_name}</span>
+              <div 
+                key={game.id} 
+                className={`game-card ${status ? 'has-event' : ''}`}
+                onClick={() => onSelectGame(game)}
+              >
+                <img src={game.game_image} alt={game.game_name} />
+                <div className="game-card-overlay">
+                  <span className="game-card-name">{game.game_name}</span>
+                  {status && (
+                    <span className="game-status" style={{ color: status.color }}>
+                      {status.text}
+                    </span>
+                  )}
                 </div>
               </div>
             );
@@ -300,26 +301,32 @@ function MyGamesPage({ games, events, onSelectGame, onSelectEvent, loadingEvents
         </div>
       </section>
 
-      <section className="section">
-        <h2 className="section-title">Timeline</h2>
-        
+      {/* Timeline */}
+      <section className="timeline-section">
+        <h2 className="section-title">Upcoming Events</h2>
         {loadingEvents ? (
-          <div className="loading-state">Loading events...</div>
-        ) : events.length === 0 ? (
-          <div className="empty-state">
-            <p>No events yet</p>
-            <p className="hint">Click the ↻ button to discover events!</p>
+          <div className="loading-events">
+            <div className="cyber-loader"></div>
+            <span>Loading events...</span>
           </div>
-        ) : (
-          <div className="timeline">
-            {events.slice(0, 30).map(event => (
-              <div key={event.id || event.steam_gid} className="timeline-row" onClick={() => onSelectEvent(event)}>
+        ) : events.length > 0 ? (
+          <div className="timeline-list">
+            {events.map(event => (
+              <div 
+                key={event.id || event.steam_gid} 
+                className="timeline-row"
+                onClick={() => onSelectEvent(event)}
+              >
                 <span className="timeline-icon">{getEventIcon(event.type)}</span>
                 <span className="timeline-game">{event.gameName || event.game_name}</span>
                 <span className="timeline-title">{event.title}</span>
                 <span className="timeline-date">{formatDate(event.date)}</span>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="no-events-message">
+            <p>No events found. Click ↻ in the header to discover events!</p>
           </div>
         )}
       </section>
@@ -333,26 +340,23 @@ function AboutPage() {
     <div className="about-page">
       <div className="about-content">
         <h1>About EventHorizon</h1>
-        <p className="about-tagline">Your personal gaming command center</p>
-        
-        <div className="about-section">
-          <h2>What is EventHorizon?</h2>
-          <p>
-            EventHorizon helps you track all the important events for your favorite games - 
-            patches, DLC releases, seasonal content, and more. Never miss another update.
-          </p>
-        </div>
-
-        <div className="about-section">
-          <h2>Features</h2>
-          <ul>
-            <li>🎮 Track unlimited games</li>
-            <li>✨ Auto-discover events from Steam</li>
-            <li>📅 Unified timeline</li>
-            <li>🔐 Personal account to save your data</li>
-            <li>📝 Add custom events</li>
-          </ul>
-        </div>
+        <p>
+          EventHorizon helps you track all the important events for your favorite games -
+          patches, seasons, DLCs, tournaments, and more.
+        </p>
+        <h2>How it works</h2>
+        <ol>
+          <li>Add games you want to track</li>
+          <li>Click the refresh button to discover events</li>
+          <li>View your personalized timeline</li>
+        </ol>
+        <h2>Features</h2>
+        <ul>
+          <li>Track multiple games at once</li>
+          <li>Automatic event discovery</li>
+          <li>Clean, organized timeline view</li>
+          <li>Details and source links for each event</li>
+        </ul>
       </div>
     </div>
   );
@@ -362,20 +366,21 @@ function AboutPage() {
 function SearchModal({ isOpen, onClose, onTrack, trackedIds }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [searching, setSearching] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim()) return;
-    setLoading(true);
+    
+    setSearching(true);
     try {
       const response = await fetch(`${API_URL}/api/games?search=${encodeURIComponent(query)}`);
       const data = await response.json();
-      setResults(data);
+      setResults(data || []);
     } catch (err) {
       console.error('Search failed:', err);
     } finally {
-      setLoading(false);
+      setSearching(false);
     }
   };
 
@@ -383,19 +388,21 @@ function SearchModal({ isOpen, onClose, onTrack, trackedIds }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div className="modal-content search-modal" onClick={e => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>✕</button>
-        <h2>Find Games</h2>
+        <h2>Search Games</h2>
         
         <form onSubmit={handleSearch} className="search-form">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search games..."
+            placeholder="Search for a game..."
             autoFocus
           />
-          <button type="submit" disabled={loading}>{loading ? '...' : 'Search'}</button>
+          <button type="submit" disabled={searching}>
+            {searching ? 'Searching...' : 'Search'}
+          </button>
         </form>
 
         <div className="search-results">
