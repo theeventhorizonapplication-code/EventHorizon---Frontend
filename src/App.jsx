@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './AuthContext';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
-import './App.css';
+import './styles/App.css';
 
 const API_URL = 'https://eventhorizon-backend-production.up.railway.app';
 
