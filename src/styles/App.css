@@ -1,1622 +1,902 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-:root {
-  --purple: #a855f7;
-  --purple-dim: rgba(168, 85, 247, 0.2);
-  --blue: #3b82f6;
-  --cyan: #22d3ee;
-  --bg: #07070d;
-  --bg-card: rgba(15, 15, 25, 0.9);
-  --border: rgba(168, 85, 247, 0.15);
-  --text: #ffffff;
-  --text-dim: rgba(255, 255, 255, 0.5);
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
-
-.app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ==================== HEADER / NAVIGATION ==================== */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 32px;
-  background: rgba(7, 7, 13, 0.9);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(20px);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.header-brand:hover {
-  opacity: 0.8;
-}
-
-.header-logo {
-  font-size: 24px;
-  color: var(--purple);
-}
-
-.header h1 {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.highlight {
-  background: linear-gradient(135deg, var(--purple), var(--cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.header-nav {
-  display: flex;
-  gap: 8px;
-}
-
-.nav-btn {
-  padding: 8px 16px;
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s;
-}
-
-.nav-btn:hover {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.nav-btn.active {
-  color: var(--purple);
-  background: var(--purple-dim);
-}
-
-.nav-badge {
-  background: var(--purple);
-  color: white;
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 10px;
-  margin-left: 6px;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.refresh-btn {
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text-dim);
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.refresh-btn:hover:not(:disabled) {
-  color: var(--purple);
-  border-color: var(--purple);
-}
-
-.refresh-btn:disabled {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.add-btn {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  border: none;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--purple-dim);
-}
-
-.social-links {
-  display: flex;
-  gap: 8px;
-  margin-left: 8px;
-  padding-left: 16px;
-  border-left: 1px solid var(--border);
-}
-
-.social-btn {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  color: var(--text-dim);
-  text-decoration: none;
-  font-size: 16px;
-  transition: all 0.2s;
-}
-
-.social-btn:hover {
-  color: var(--purple);
-  background: var(--purple-dim);
-}
-
-/* ==================== HOME PAGE (Popular Games) ==================== */
-.home-page {
-  position: relative;
-  min-height: calc(100vh - 200px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 0;
-}
-
-.cyber-bg {
-  position: fixed;
-  inset: 0;
-  background: 
-    radial-gradient(ellipse at 20% 20%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.grid-overlay {
-  position: fixed;
-  inset: 0;
-  background-image: 
-    linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(168, 85, 247, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.home-content {
-  position: relative;
-  z-index: 10;
-  text-align: center;
-  max-width: 800px;
-}
-
-.logo-container {
-  margin-bottom: 24px;
-  position: relative;
-}
-
-.logo-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 300px;
-  height: 100px;
-  background: radial-gradient(ellipse, var(--purple-dim), transparent 70%);
-  filter: blur(40px);
-}
-
-.logo {
-  font-size: 52px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-}
-
-.logo-icon {
-  color: var(--purple);
-  filter: drop-shadow(0 0 20px var(--purple));
-}
-
-.logo-text {
-  background: linear-gradient(135deg, #fff, rgba(255,255,255,0.8));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.logo-highlight {
-  background: linear-gradient(135deg, var(--purple), var(--cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.tagline {
-  font-size: 18px;
-  color: var(--text-dim);
-  margin-bottom: 8px;
-}
-
-.description {
-  font-size: 14px;
-  color: rgba(255,255,255,0.4);
-  line-height: 1.7;
-  margin-bottom: 32px;
-}
-
-/* Home Timeline - Horizontal Scroll */
-.home-timeline {
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-bottom: 48px;
-  text-align: left;
-}
-
-.home-timeline-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--purple);
-  order: 2;
-}
-
-.timeline-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.today-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: linear-gradient(135deg, var(--purple-dim), rgba(59, 130, 246, 0.2));
-  border: 1px solid var(--purple);
-  border-radius: 12px;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  order: 1;
-}
-
-.today-btn:hover {
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--purple-dim);
-}
-
-.today-btn-icon {
-  font-size: 16px;
-}
-
-.today-btn-date {
-  color: var(--text);
-}
-
-.today-btn-badge {
-  background: var(--purple);
-  color: white;
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  margin-left: 4px;
-}
-
-.home-timeline-scroll {
-  display: flex;
-  gap: 18px;
-  overflow-x: auto;
-  padding: 8px 40px 20px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--purple) transparent;
-}
-
-.home-timeline-scroll::-webkit-scrollbar {
-  height: 8px;
-}
-
-.home-timeline-scroll::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05);
-  border-radius: 4px;
-}
-
-.home-timeline-scroll::-webkit-scrollbar-thumb {
-  background: var(--purple);
-  border-radius: 4px;
-}
-
-.home-timeline-card {
-  flex-shrink: 0;
-  width: 280px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.home-timeline-card:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: var(--purple);
-  transform: translateY(-4px);
-}
-
-.htc-image {
-  position: relative;
-  height: 140px;
-}
-
-.htc-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.htc-image-placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(59,130,246,0.2));
-}
-
-.htc-type-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  background: rgba(0,0,0,0.8);
-  color: var(--purple);
-}
-
-.htc-type-badge[data-type="patch"] {
-  background: rgba(168, 85, 247, 0.9);
-  color: white;
-}
-
-.htc-type-badge[data-type="update"] {
-  background: rgba(139, 92, 246, 0.9);
-  color: white;
-}
-
-.htc-type-badge[data-type="season"] {
-  background: rgba(34, 211, 238, 0.9);
-  color: black;
-}
-
-.htc-type-badge[data-type="dlc"],
-.htc-type-badge[data-type="expansion"] {
-  background: rgba(236, 72, 153, 0.9);
-  color: white;
-}
-
-.htc-content {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-}
-
-.htc-date {
-  display: block;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--purple);
-  text-align: center;
-  padding: 12px 16px;
-  text-shadow: 0 0 20px var(--purple), 0 0 40px rgba(168, 85, 247, 0.5);
-  background: linear-gradient(180deg, rgba(168, 85, 247, 0.1) 0%, transparent 100%);
-  border-bottom: 1px solid var(--border);
-}
-
-.htc-game {
-  display: block;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-dim);
-  margin-bottom: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.htc-title {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.home-timeline-empty {
-  padding: 24px;
-  text-align: center;
-  color: var(--text-dim);
-  font-size: 14px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 12px;
-  border: 1px dashed var(--border);
-}
-
-.suggested-section {
-  margin-bottom: 40px;
-}
-
-.suggested-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--purple);
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.pulse-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--purple);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-.loading-suggestions {
-  padding: 40px;
-  color: var(--text-dim);
-}
-
-.cyber-loader {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--border);
-  border-top-color: var(--purple);
-  border-radius: 50%;
-  margin: 0 auto 12px;
-  animation: spin 1s linear infinite;
-}
-
-.suggested-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 16px;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.suggested-card {
-  aspect-ratio: 3/4;
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
-  border: 2px solid transparent;
-  transition: all 0.3s;
-}
-
-.suggested-card:hover {
-  border-color: var(--purple);
-  transform: translateY(-6px);
-  box-shadow: 0 16px 32px rgba(0,0,0,0.4);
-}
-
-.suggested-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.suggested-card-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 40px 10px 10px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.9));
-}
-
-.suggested-card-name {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.add-icon {
-  font-size: 11px;
-  color: var(--purple);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.suggested-card:hover .add-icon {
-  opacity: 1;
-}
-
-.search-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 28px;
-  background: transparent;
-  border: 2px solid var(--border);
-  border-radius: 50px;
-  color: var(--text-dim);
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.search-cta:hover {
-  border-color: var(--purple);
-  color: var(--text);
-}
-
-.cta-arrow {
-  transition: transform 0.2s;
-}
-
-.search-cta:hover .cta-arrow {
-  transform: translateX(4px);
-}
-
-/* ==================== MAIN / MY GAMES PAGE ==================== */
-.main {
-  flex: 1;
-  padding: 32px;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.mygames-page {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-}
-
-.empty-state-large {
-  text-align: center;
-  padding: 100px 20px;
-}
-
-.empty-state-large .empty-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-  opacity: 0.5;
-}
-
-.empty-state-large h2 {
-  font-size: 24px;
-  margin-bottom: 12px;
-  color: var(--text);
-}
-
-.empty-state-large p {
-  color: var(--text-dim);
-}
-
-.section {
-  /* Section container */
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.section-header .section-title {
-  margin-bottom: 0;
-}
-
-.section-add-btn {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  border: none;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.section-add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--purple-dim);
-}
-
-.section-title {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--text-dim);
-  margin-bottom: 20px;
-}
-
-.games-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 180px));
-  gap: 16px;
-  justify-content: center;
-}
-
-.game-card {
-  aspect-ratio: 3/4;
-  border-radius: 14px;
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
-  border: 2px solid transparent;
-  transition: all 0.3s;
-  max-width: 180px;
-}
-
-.game-card:hover {
-  border-color: var(--purple);
-  transform: translateY(-6px);
-  box-shadow: 0 16px 32px rgba(0,0,0,0.4);
-}
-
-.game-card.has-event {
-  border-color: var(--cyan);
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
-}
-
-.game-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.game-card-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 40px 12px 12px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.9));
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.game-card-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.game-status {
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.game-tile {
-  aspect-ratio: 3/4;
-  border-radius: 14px;
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
-  border: 2px solid transparent;
-  transition: all 0.3s;
-}
-
-.game-tile:hover {
-  border-color: var(--purple);
-  transform: translateY(-6px);
-  box-shadow: 0 16px 32px rgba(0,0,0,0.4);
-}
-
-.game-tile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.game-tile-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 40px 12px 12px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.9));
-}
-
-.game-title {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.status-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-/* Timeline */
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.timeline-row {
-  display: grid;
-  grid-template-columns: 32px 140px 1fr auto;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 16px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.timeline-row:hover {
-  background: rgba(255,255,255,0.05);
-}
-
-.timeline-icon {
-  font-size: 18px;
-  text-align: center;
-}
-
-.timeline-game {
-  font-size: 12px;
-  color: var(--text-dim);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.timeline-title {
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.timeline-date {
-  font-size: 13px;
-  color: var(--purple);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.loading-state,
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-dim);
-}
-
-.empty-state .hint {
-  font-size: 13px;
-  color: rgba(255,255,255,0.3);
-  margin-top: 8px;
-}
-
-/* ==================== ABOUT PAGE ==================== */
-.about-page {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.about-content h1 {
-  font-size: 32px;
-  margin-bottom: 8px;
-}
-
-.about-tagline {
-  color: var(--purple);
-  margin-bottom: 40px;
-}
-
-.about-section {
-  margin-bottom: 32px;
-}
-
-.about-section h2 {
-  font-size: 18px;
-  margin-bottom: 12px;
-  color: var(--text);
-}
-
-.about-section p {
-  color: var(--text-dim);
-  line-height: 1.7;
-}
-
-.about-section ul {
-  list-style: none;
-}
-
-.about-section li {
-  padding: 8px 0;
-  color: var(--text-dim);
-}
-
-.about-footer {
-  margin-top: 60px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-  text-align: center;
-  color: var(--text-dim);
-}
-
-/* ==================== MODALS ==================== */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  padding: 20px;
-}
-
-.modal-content {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
-  max-width: 800px;
-  width: 100%;
-  max-height: 85vh;
-  overflow-y: auto;
-  position: relative;
-}
-
-.modal-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
-  background: rgba(255,255,255,0.05);
-  border: none;
-  border-radius: 8px;
-  color: var(--text-dim);
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.modal-close:hover {
-  background: var(--purple-dim);
-  color: var(--text);
-}
-
-.modal-content h2 {
-  font-size: 20px;
-  margin-bottom: 20px;
-}
-
-/* Search Modal */
-.search-form {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.search-form input {
-  flex: 1;
-  padding: 12px 16px;
-  background: rgba(255,255,255,0.05);
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  color: var(--text);
-  font-size: 14px;
-}
-
-.search-form input:focus {
-  outline: none;
-  border-color: var(--purple);
-}
-
-.search-form button {
-  padding: 12px 20px;
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  border: none;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.search-results {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 16px;
-  max-height: 500px;
-  overflow-y: auto;
-}
-
-.search-result {
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  background: rgba(255,255,255,0.03);
-  transition: all 0.2s;
-}
-
-.search-result:hover:not(.tracked) {
-  transform: translateY(-4px);
-  border: 1px solid var(--purple);
-}
-
-.search-result.tracked {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.search-result img {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-}
-
-.search-result-info {
-  padding: 10px;
-}
-
-.search-result-info h4 {
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.badge-tracked {
-  font-size: 10px;
-  color: #22c55e;
-}
-
-.badge-add {
-  font-size: 10px;
-  color: var(--purple);
-}
-
-/* Game Modal */
-.game-modal {
-  padding: 0;
-  overflow: hidden;
-}
-
-.game-modal-header {
-  height: 150px;
-  background-size: cover;
-  background-position: center;
-}
-
-.game-modal-header-overlay {
-  height: 100%;
-  background: linear-gradient(transparent 40%, var(--bg-card));
-  display: flex;
-  align-items: flex-end;
-  padding: 20px;
-}
-
-.game-modal-header-overlay h2 {
-  margin: 0;
-}
-
-.game-modal-body {
-  padding: 20px;
-}
-
-.game-modal-actions {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.btn-add-event {
-  flex: 1;
-  padding: 12px;
-  background: var(--purple-dim);
-  border: 2px solid var(--purple);
-  border-radius: 10px;
-  color: var(--purple);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-add-event:hover {
-  background: var(--purple);
-  color: white;
-}
-
-.btn-remove-game {
-  padding: 12px 16px;
-  background: transparent;
-  border: 2px solid rgba(239, 68, 68, 0.3);
-  border-radius: 10px;
-  color: #ef4444;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-remove-game:hover {
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.add-event-form {
-  background: rgba(255,255,255,0.03);
-  padding: 16px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.add-event-form .form-row {
-  display: flex;
-  gap: 10px;
-}
-
-.add-event-form select,
-.add-event-form input {
-  flex: 1;
-  padding: 10px 12px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-}
-
-.add-event-form button {
-  padding: 12px;
-  background: var(--purple);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.game-events h3 {
-  font-size: 14px;
-  color: var(--text-dim);
-  margin-bottom: 12px;
-}
-
-.game-events ul {
-  list-style: none;
-}
-
-.game-events li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.game-events li:last-child {
-  border-bottom: none;
-}
-
-.game-events .event-title {
-  flex: 1;
-  font-size: 14px;
-}
-
-.game-events .event-date {
-  font-size: 12px;
-  color: var(--text-dim);
-}
-
-.game-events button {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  cursor: pointer;
-  padding: 4px;
-}
-
-.game-events button:hover {
-  color: #ef4444;
-}
-
-.no-events {
-  color: var(--text-dim);
-  font-size: 14px;
-}
-
-/* Event Modal */
-.event-modal {
-  padding: 0;
-  overflow: hidden;
-}
-
-.event-modal-header {
-  height: 120px;
-  background-size: cover;
-  background-position: center;
-}
-
-.event-modal-header-overlay {
-  height: 100%;
-  background: linear-gradient(transparent, var(--bg-card));
-  display: flex;
-  align-items: flex-end;
-  padding: 16px 20px;
-}
-
-.event-modal-header-overlay span {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--purple);
-}
-
-.event-modal-body {
-  padding: 20px;
-}
-
-.event-modal-body h2 {
-  margin-bottom: 8px;
-}
-
-.event-modal-date {
-  color: var(--text-dim);
-  font-size: 14px;
-  margin-bottom: 16px;
-}
-
-.event-modal-desc {
-  color: var(--text-dim);
-  line-height: 1.7;
-  margin-bottom: 16px;
-}
-
-.event-modal-link {
-  color: var(--purple);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.event-modal-link:hover {
-  text-decoration: underline;
-}
-
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 768px) {
-  .header {
-    padding: 12px 16px;
+import { useState, useEffect } from 'react';
+import { AuthProvider, useAuth } from './AuthContext';
+import LoginPage from './LoginPage';
+import RegisterPage from './RegisterPage';
+import './styles/App.css';
+
+const API_URL = 'https://eventhorizon-backend-production.up.railway.app';
+
+// Popular games to suggest
+const SUGGESTED_GAMES = [
+  { searchTerm: "Path of Exile 2" },
+  { searchTerm: "Diablo IV" },
+  { searchTerm: "Counter-Strike 2" },
+  { searchTerm: "Destiny 2" },
+  { searchTerm: "Elden Ring" },
+  { searchTerm: "Apex Legends" },
+];
+
+// Genre list for browsing
+const GENRES = [
+  // Core
+  { slug: 'action', name: 'Action' },
+  { slug: 'role-playing-games-rpg', name: 'RPG' },
+  { slug: 'shooter', name: 'Shooter' },
+  { slug: 'strategy', name: 'Strategy' },
+  { slug: 'adventure', name: 'Adventure' },
+  { slug: 'puzzle', name: 'Puzzle' },
+  { slug: 'platformer', name: 'Platformer' },
+  { slug: 'fighting', name: 'Fighting' },
+  { slug: 'racing', name: 'Racing' },
+  { slug: 'sports', name: 'Sports' },
+  { slug: 'simulation', name: 'Simulation' },
+  { slug: 'indie', name: 'Indie' },
+  // Specific
+  { slug: 'battle-royale', name: 'Battle Royale', tag: true },
+  { slug: 'survival', name: 'Survival', tag: true },
+  { slug: 'horror', name: 'Horror', tag: true },
+  { slug: 'roguelike', name: 'Roguelike', tag: true },
+  { slug: 'massively-multiplayer', name: 'MMORPG' },
+  { slug: 'card', name: 'Card' },
+  { slug: 'moba', name: 'MOBA', tag: true },
+  { slug: 'metroidvania', name: 'Metroidvania', tag: true },
+  { slug: 'souls-like', name: 'Souls-like', tag: true },
+  { slug: 'open-world', name: 'Open World', tag: true },
+  { slug: 'tower-defense', name: 'Tower Defense', tag: true },
+  { slug: 'city-builder', name: 'City Builder', tag: true },
+  { slug: 'sandbox', name: 'Sandbox', tag: true },
+  { slug: 'co-op', name: 'Co-op', tag: true },
+  { slug: 'arcade', name: 'Arcade' },
+  { slug: 'turn-based', name: 'Turn-Based', tag: true },
+  { slug: 'real-time-strategy', name: 'RTS', tag: true },
+  { slug: 'hack-and-slash', name: 'Hack and Slash', tag: true },
+  { slug: 'dungeon-crawler', name: 'Dungeon Crawler', tag: true },
+];
+
+// ============ NAVIGATION ============
+function Navigation({ currentPage, onNavigate, onSearch, onRefresh, isRefreshing, gamesCount }) {
+  const { user, logout } = useAuth();
+
+  return (
+    <header className="header">
+      <div className="header-left">
+        <div className="header-brand" onClick={() => onNavigate('home')}>
+          <span className="header-logo">◈</span>
+          <h1>Event<span className="highlight">Horizon</span></h1>
+        </div>
+        
+        <nav className="header-nav">
+          <button 
+            className={`nav-btn ${currentPage === 'home' ? 'active' : ''}`}
+            onClick={() => onNavigate('home')}
+          >
+            Home
+          </button>
+          <button 
+            className={`nav-btn ${currentPage === 'mygames' ? 'active' : ''}`}
+            onClick={() => onNavigate('mygames')}
+          >
+            Your Games {gamesCount > 0 && <span className="nav-badge">{gamesCount}</span>}
+          </button>
+          <button 
+            className={`nav-btn ${currentPage === 'about' ? 'active' : ''}`}
+            onClick={() => onNavigate('about')}
+          >
+            About
+          </button>
+        </nav>
+      </div>
+      
+      <div className="header-right">
+        {currentPage === 'mygames' && gamesCount > 0 && (
+          <button 
+            className="refresh-btn" 
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            title="Discover Events"
+          >
+            {isRefreshing ? '⟳' : '↻'}
+          </button>
+        )}
+        
+        <button className="add-btn" onClick={onSearch}>+ Add Game</button>
+        
+        {user && (
+          <div className="user-menu">
+            <span className="user-name">👤 {user.username}</span>
+            <button className="logout-btn" onClick={logout}>Logout</button>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
+
+// ============ TODAY MODAL ============
+function TodayModal({ isOpen, onClose, events, onSelectEvent }) {
+  if (!isOpen) return null;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const todayEvents = events.filter(event => {
+    const eventDate = new Date(event.date);
+    eventDate.setHours(0, 0, 0, 0);
+    return eventDate.getTime() === today.getTime();
+  });
+
+  const formattedDate = today.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    month: 'long', 
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content today-modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>✕</button>
+        
+        <div className="today-modal-header">
+          <span className="today-modal-icon">📅</span>
+          <h2>Today's Events</h2>
+          <p className="today-modal-date">{formattedDate}</p>
+        </div>
+
+        <div className="today-modal-body">
+          {todayEvents.length > 0 ? (
+            <div className="today-events-list">
+              {todayEvents.map(event => (
+                <div 
+                  key={event.id || event.steam_gid} 
+                  className="today-event-card"
+                  onClick={() => { onSelectEvent(event); onClose(); }}
+                >
+                  {event.gameImage && (
+                    <img src={event.gameImage} alt="" className="today-event-image" />
+                  )}
+                  <div className="today-event-info">
+                    <span className="today-event-game">{event.gameName || event.game_name}</span>
+                    <span className="today-event-title">{event.title}</span>
+                    <span className="today-event-type" data-type={event.type}>
+                      {event.type?.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="today-empty">
+              <span className="today-empty-icon">🎮</span>
+              <p>No events scheduled for today</p>
+              <span className="today-empty-hint">Check back tomorrow or browse your timeline!</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ GENRE MODAL ============
+function GenreModal({ isOpen, onClose, genre, onTrack, trackedIds }) {
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen || !genre) return;
+
+    const fetchGenreGames = async () => {
+      setLoading(true);
+      setGames([]);
+      try {
+        const param = genre.tag ? 'tags' : 'genres';
+        const response = await fetch(`${API_URL}/api/games/browse?${param}=${genre.slug}`);
+        const data = await response.json();
+        setGames(data || []);
+      } catch (err) {
+        console.error('Failed to fetch genre games:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGenreGames();
+  }, [isOpen, genre]);
+
+  if (!isOpen || !genre) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content genre-modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>✕</button>
+        
+        <div className="genre-modal-header">
+          <h2>{genre.name} Games</h2>
+          <p className="genre-modal-subtitle">Popular games in this genre</p>
+        </div>
+
+        <div className="genre-modal-body">
+          {loading ? (
+            <div className="genre-loading">
+              <div className="cyber-loader"></div>
+              <span>Loading games...</span>
+            </div>
+          ) : games.length > 0 ? (
+            <div className="genre-games-grid">
+              {games.map(game => (
+                <div 
+                  key={game.id} 
+                  className={`genre-game-card ${trackedIds.includes(game.id) ? 'tracked' : ''}`}
+                  onClick={() => !trackedIds.includes(game.id) && onTrack(game)}
+                >
+                  <img src={game.background_image || '/placeholder.png'} alt={game.name} />
+                  <div className="genre-game-overlay">
+                    <span className="genre-game-name">{game.name}</span>
+                    {game.metacritic && (
+                      <span className="genre-game-score">{game.metacritic}</span>
+                    )}
+                    <span className={trackedIds.includes(game.id) ? 'badge-tracked' : 'badge-add'}>
+                      {trackedIds.includes(game.id) ? '✓ Tracked' : '+ Track'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="genre-empty">
+              <p>No games found for this genre</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ HOME PAGE ============
+function HomePage({ onAddGame, onSearch, events, games, onSelectEvent, onShowToday, onSelectGenre }) {
+  const [suggestedGames, setSuggestedGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      const fetchedGames = [];
+      for (const suggestion of SUGGESTED_GAMES) {
+        try {
+          const response = await fetch(`${API_URL}/api/games?search=${encodeURIComponent(suggestion.searchTerm)}`);
+          const data = await response.json();
+          if (data && data.length > 0) {
+            fetchedGames.push(data[0]);
+          }
+        } catch (err) {
+          console.error('Failed to fetch:', err);
+        }
+      }
+      setSuggestedGames(fetchedGames);
+      setLoading(false);
+    };
+    fetchSuggestions();
+  }, []);
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    date.setHours(0,0,0,0);
+    today.setHours(0,0,0,0);
+    tomorrow.setHours(0,0,0,0);
+    
+    if (date.getTime() === today.getTime()) return 'Today';
+    if (date.getTime() === tomorrow.getTime()) return 'Tomorrow';
+    
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  // Get today's date formatted
+  const getTodayFormatted = () => {
+    return new Date().toLocaleDateString('en-US', { 
+      weekday: 'short',
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  // Count today's events
+  const getTodayEventCount = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return events.filter(event => {
+      const eventDate = new Date(event.date);
+      eventDate.setHours(0, 0, 0, 0);
+      return eventDate.getTime() === today.getTime();
+    }).length;
+  };
+
+  return (
+    <div className="home-page">
+      <div className="cyber-bg"></div>
+      <div className="grid-overlay"></div>
+      
+      <div className="home-content">
+        <div className="logo-container">
+          <div className="logo-glow"></div>
+          <h1 className="logo">
+            <span className="logo-icon">◈</span>
+            <span className="logo-text">Event<span className="logo-highlight">Horizon</span></span>
+          </h1>
+        </div>
+
+        <p className="tagline">Your personal gaming command center</p>
+        <p className="description">
+          Track patches, seasons, tournaments & events.<br />
+          Never miss a moment in your favorite games.
+        </p>
+
+        {/* Timeline */}
+        {games.length > 0 && (
+          <div className="home-timeline">
+            <div className="timeline-header">
+              <h3 className="home-timeline-title">Your Timeline</h3>
+              <button className="today-btn" onClick={onShowToday}>
+                <span className="today-btn-icon">📅</span>
+                <span className="today-btn-date">{getTodayFormatted()}</span>
+                {getTodayEventCount() > 0 && (
+                  <span className="today-btn-badge">{getTodayEventCount()}</span>
+                )}
+              </button>
+            </div>
+            {events.length > 0 ? (
+              <div className="home-timeline-scroll">
+                {events.slice(0, 20).map(event => (
+                  <div 
+                    key={event.id || event.steam_gid} 
+                    className="home-timeline-card"
+                    onClick={() => onSelectEvent(event)}
+                  >
+                    <span className="htc-date">{formatDate(event.date)}</span>
+                    <div className="htc-image">
+                      {event.gameImage ? (
+                        <img src={event.gameImage} alt="" />
+                      ) : (
+                        <div className="htc-image-placeholder"></div>
+                      )}
+                      <span className="htc-type-badge" data-type={event.type}>
+                        {event.type?.toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="htc-content">
+                      <span className="htc-game">{event.gameName || event.game_name}</span>
+                      <span className="htc-title">{event.title}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="home-timeline-empty">
+                No events yet. Go to Your Games and click ↻ to discover events!
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Popular Games */}
+        <div className="suggested-section">
+          <h2 className="suggested-title">
+            <span className="pulse-dot"></span>
+            Popular Games
+          </h2>
+          
+          {loading ? (
+            <div className="loading-suggestions">
+              <div className="cyber-loader"></div>
+              <span>Loading...</span>
+            </div>
+          ) : (
+            <div className="suggested-grid">
+              {suggestedGames.map(game => (
+                <div key={game.id} className="suggested-card" onClick={() => onAddGame(game)}>
+                  <img src={game.background_image} alt={game.name} />
+                  <div className="suggested-card-overlay">
+                    <span className="suggested-card-name">{game.name}</span>
+                    <span className="add-icon">+ Track</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Browse by Genre */}
+        <div className="genre-section">
+          <h2 className="genre-section-title">
+            <span className="pulse-dot"></span>
+            Browse by Genre
+          </h2>
+          <div className="genre-tags">
+            {GENRES.map(genre => (
+              <button 
+                key={genre.slug} 
+                className="genre-tag"
+                onClick={() => onSelectGenre(genre)}
+              >
+                {genre.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button className="search-cta" onClick={onSearch}>
+          <span>Search for other games</span>
+          <span className="cta-arrow">→</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ============ MY GAMES PAGE ============
+function MyGamesPage({ games, events, onSelectGame, onSelectEvent, loadingEvents, onAddGame }) {
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    date.setHours(0,0,0,0);
+    today.setHours(0,0,0,0);
+    tomorrow.setHours(0,0,0,0);
+    
+    if (date.getTime() === today.getTime()) return 'Today';
+    if (date.getTime() === tomorrow.getTime()) return 'Tomorrow';
+    
+    const diff = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+    if (diff < 0) return `${Math.abs(diff)}d ago`;
+    if (diff <= 7) return `In ${diff} days`;
+    
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const getEventIcon = (type) => {
+    const icons = { patch: '🔧', update: '⬆️', season: '🎬', expansion: '📦', dlc: '🎁' };
+    return icons[type] || '📌';
+  };
+
+  const getGameStatus = (gameId) => {
+    const gameEvents = events.filter(e => e.game_id === gameId);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    for (const event of gameEvents) {
+      const eventDate = new Date(event.date);
+      eventDate.setHours(0,0,0,0);
+      const diff = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
+      
+      if (diff === 0) return { type: 'today', text: 'Event Today!', color: '#22d3ee' };
+      if (diff === 1) return { type: 'tomorrow', text: 'Event Tomorrow', color: '#a78bfa' };
+      if (diff > 0 && diff <= 7) return { type: 'soon', text: `Event in ${diff} days`, color: '#60a5fa' };
+    }
+    return null;
+  };
+
+  if (games.length === 0) {
+    return (
+      <div className="mygames-page empty-state">
+        <div className="empty-message">
+          <span className="empty-icon">🎮</span>
+          <h2>No games tracked yet</h2>
+          <p>Start by adding some games to track their events</p>
+          <button className="add-btn-large" onClick={onAddGame}>+ Add Your First Game</button>
+        </div>
+      </div>
+    );
   }
+
+  return (
+    <div className="mygames-page">
+      {/* Games Grid */}
+      <section className="games-section">
+        <h2 className="section-title">Your Games</h2>
+        <div className="games-grid">
+          {games.map(game => {
+            const status = getGameStatus(game.game_id);
+            return (
+              <div 
+                key={game.id} 
+                className={`game-card ${status ? 'has-event' : ''}`}
+                onClick={() => onSelectGame(game)}
+              >
+                <img src={game.game_image} alt={game.game_name} />
+                <div className="game-card-overlay">
+                  <span className="game-card-name">{game.game_name}</span>
+                  {status && (
+                    <span className="game-status" style={{ color: status.color }}>
+                      {status.text}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Timeline */}
+      <section className="timeline-section">
+        <h2 className="section-title">Upcoming Events</h2>
+        {loadingEvents ? (
+          <div className="loading-events">
+            <div className="cyber-loader"></div>
+            <span>Loading events...</span>
+          </div>
+        ) : events.length > 0 ? (
+          <div className="timeline-list">
+            {events.map(event => (
+              <div 
+                key={event.id || event.steam_gid} 
+                className="timeline-row"
+                onClick={() => onSelectEvent(event)}
+              >
+                <span className="timeline-icon">{getEventIcon(event.type)}</span>
+                <span className="timeline-game">{event.gameName || event.game_name}</span>
+                <span className="timeline-title">{event.title}</span>
+                <span className="timeline-date">{formatDate(event.date)}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="no-events-message">
+            <p>No events found. Click ↻ in the header to discover events!</p>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+// ============ ABOUT PAGE ============
+function AboutPage() {
+  return (
+    <div className="about-page">
+      <div className="about-content">
+        <h1>About EventHorizon</h1>
+        <p>
+          EventHorizon helps you track all the important events for your favorite games -
+          patches, seasons, DLCs, tournaments, and more.
+        </p>
+        <h2>How it works</h2>
+        <ol>
+          <li>Add games you want to track</li>
+          <li>Click the refresh button to discover events</li>
+          <li>View your personalized timeline</li>
+        </ol>
+        <h2>Features</h2>
+        <ul>
+          <li>Track multiple games at once</li>
+          <li>Automatic event discovery</li>
+          <li>Clean, organized timeline view</li>
+          <li>Details and source links for each event</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// ============ SEARCH MODAL ============
+function SearchModal({ isOpen, onClose, onTrack, trackedIds }) {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    
+    setSearching(true);
+    try {
+      const response = await fetch(`${API_URL}/api/games?search=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      setResults(data || []);
+    } catch (err) {
+      console.error('Search failed:', err);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content search-modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>✕</button>
+        <h2>Search Games</h2>
+        
+        <form onSubmit={handleSearch} className="search-form">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search for a game..."
+            autoFocus
+          />
+          <button type="submit" disabled={searching}>
+            {searching ? 'Searching...' : 'Search'}
+          </button>
+        </form>
+
+        <div className="search-results">
+          {results.map(game => (
+            <div 
+              key={game.id} 
+              className={`search-result ${trackedIds.includes(game.id) ? 'tracked' : ''}`}
+              onClick={() => !trackedIds.includes(game.id) && onTrack(game)}
+            >
+              <img src={game.background_image || '/placeholder.png'} alt={game.name} />
+              <div className="search-result-info">
+                <h4>{game.name}</h4>
+                <span className={trackedIds.includes(game.id) ? 'badge-tracked' : 'badge-add'}>
+                  {trackedIds.includes(game.id) ? '✓ Tracked' : '+ Track'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ GAME MODAL ============
+function GameModal({ game, onClose, onRemoveGame }) {
+  if (!game) return null;
+
+  const gameData = game.game_data || {};
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content game-modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>✕</button>
+        
+        <div className="game-modal-header" style={{ backgroundImage: `url(${game.game_image || gameData.background_image})` }}>
+          <div className="game-modal-header-overlay">
+            <h2>{game.game_name}</h2>
+          </div>
+        </div>
+
+        <div className="game-modal-body">
+          <button className="btn-remove-game" onClick={() => { onRemoveGame(game.game_id); onClose(); }}>
+            Remove Game
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ EVENT MODAL ============
+function EventModal({ event, onClose }) {
+  if (!event) return null;
+
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toLocaleDateString('en-US', { 
+      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' 
+    });
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content event-modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>✕</button>
+        
+        {event.gameImage && (
+          <div className="event-modal-header" style={{ backgroundImage: `url(${event.gameImage})` }}>
+            <div className="event-modal-header-overlay">
+              <span>{event.gameName || event.game_name}</span>
+            </div>
+          </div>
+        )}
+        
+        <div className="event-modal-body">
+          <h2>{event.title}</h2>
+          <p className="event-modal-date">{formatDate(event.date)}</p>
+          {event.description && <p className="event-modal-desc">{event.description}</p>}
+          {event.source_url && (
+            <a href={event.source_url} target="_blank" rel="noopener noreferrer" className="event-modal-link">
+              View Source →
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ MAIN APP CONTENT ============
+function AppContent() {
+  const { isAuthenticated, loading, authFetch, user } = useAuth();
+  const [authPage, setAuthPage] = useState('login');
   
-  .header-left {
-    gap: 16px;
+  const [games, setGames] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState('home');
+  const [showSearch, setShowSearch] = useState(false);
+  const [showToday, setShowToday] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState(null);
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Fetch user's games and timeline
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchGames();
+      fetchTimeline();
+    }
+  }, [isAuthenticated]);
+
+  const fetchGames = async () => {
+    try {
+      const response = await authFetch('/api/user/games');
+      const data = await response.json();
+      setGames(data);
+    } catch (err) {
+      console.error('Failed to fetch games:', err);
+    }
+  };
+
+  const fetchTimeline = async () => {
+    setLoadingEvents(true);
+    try {
+      const response = await authFetch('/api/user/timeline');
+      const data = await response.json();
+      setEvents(data.events || []);
+    } catch (err) {
+      console.error('Failed to fetch timeline:', err);
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await authFetch('/api/discover/all', { method: 'POST' });
+      await fetchTimeline();
+    } catch (err) {
+      console.error('Refresh failed:', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const handleTrackGame = async (game) => {
+    try {
+      await authFetch('/api/user/games', {
+        method: 'POST',
+        body: { game }
+      });
+      await fetchGames();
+      await fetchTimeline();
+      setCurrentPage('mygames');
+    } catch (err) {
+      console.error('Track game failed:', err);
+    }
+    setShowSearch(false);
+  };
+
+  const handleRemoveGame = async (gameId) => {
+    try {
+      await authFetch(`/api/user/games/${gameId}`, { method: 'DELETE' });
+      await fetchGames();
+      await fetchTimeline();
+    } catch (err) {
+      console.error('Remove game failed:', err);
+    }
+  };
+
+  // Show loading
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="cyber-loader"></div>
+        <p>Loading...</p>
+      </div>
+    );
   }
-  
-  .header-nav {
-    display: none;
+
+  // Show auth pages if not logged in
+  if (!isAuthenticated) {
+    if (authPage === 'login') {
+      return <LoginPage onSwitchToRegister={() => setAuthPage('register')} onSuccess={() => {}} />;
+    }
+    return <RegisterPage onSwitchToLogin={() => setAuthPage('login')} onSuccess={() => {}} />;
   }
-  
-  .main {
-    padding: 20px;
-  }
-  
-  .games-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 12px;
-  }
-  
-  .timeline-row {
-    grid-template-columns: 28px 1fr auto;
-  }
-  
-  .timeline-game {
-    display: none;
-  }
-  
-  .suggested-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  .logo {
-    font-size: 36px;
-  }
+
+  return (
+    <div className="app">
+      <Navigation 
+        currentPage={currentPage}
+        onNavigate={setCurrentPage}
+        onSearch={() => setShowSearch(true)}
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
+        gamesCount={games.length}
+      />
+
+      <main className="main">
+        {currentPage === 'home' && (
+          <HomePage 
+            onAddGame={handleTrackGame} 
+            onSearch={() => setShowSearch(true)}
+            events={events}
+            games={games}
+            onSelectEvent={setSelectedEvent}
+            onShowToday={() => setShowToday(true)}
+            onSelectGenre={setSelectedGenre}
+          />
+        )}
+        
+        {currentPage === 'mygames' && (
+          <MyGamesPage 
+            games={games}
+            events={events}
+            onSelectGame={setSelectedGame}
+            onSelectEvent={setSelectedEvent}
+            loadingEvents={loadingEvents}
+            onAddGame={() => setShowSearch(true)}
+          />
+        )}
+        
+        {currentPage === 'about' && <AboutPage />}
+      </main>
+
+      <SearchModal
+        isOpen={showSearch}
+        onClose={() => setShowSearch(false)}
+        onTrack={handleTrackGame}
+        trackedIds={games.map(g => g.game_id)}
+      />
+
+      <TodayModal
+        isOpen={showToday}
+        onClose={() => setShowToday(false)}
+        events={events}
+        onSelectEvent={setSelectedEvent}
+      />
+
+      <GenreModal
+        isOpen={!!selectedGenre}
+        onClose={() => setSelectedGenre(null)}
+        genre={selectedGenre}
+        onTrack={handleTrackGame}
+        trackedIds={games.map(g => g.game_id)}
+      />
+
+      <GameModal
+        game={selectedGame}
+        onClose={() => setSelectedGame(null)}
+        onRemoveGame={handleRemoveGame}
+      />
+
+      <EventModal
+        event={selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+      />
+    </div>
+  );
 }
 
-/* ==================== AUTH PAGES ==================== */
-.auth-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: var(--bg);
-  position: relative;
+// ============ APP WITH AUTH PROVIDER ============
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }
 
-.auth-page::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: 
-    radial-gradient(ellipse at 20% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
-  pointer-events: none;
-}
-
-.auth-container {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
-  background: rgba(15, 15, 25, 0.9);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 40px;
-  backdrop-filter: blur(20px);
-}
-
-.auth-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.auth-logo {
-  font-size: 48px;
-  color: var(--purple);
-  display: block;
-  margin-bottom: 16px;
-  filter: drop-shadow(0 0 20px var(--purple));
-}
-
-.auth-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.auth-header p {
-  color: var(--text-dim);
-  font-size: 14px;
-}
-
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.auth-form .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.auth-form label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-dim);
-}
-
-.auth-form input {
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  color: var(--text);
-  font-size: 15px;
-  transition: all 0.2s;
-}
-
-.auth-form input:focus {
-  outline: none;
-  border-color: var(--purple);
-  background: rgba(168, 85, 247, 0.05);
-}
-
-.auth-form input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.auth-error {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 14px;
-  text-align: center;
-}
-
-.auth-submit {
-  padding: 16px;
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 8px;
-}
-
-.auth-submit:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px var(--purple-dim);
-}
-
-.auth-submit:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.auth-footer {
-  margin-top: 32px;
-  text-align: center;
-  padding-top: 24px;
-  border-top: 1px solid var(--border);
-}
-
-.auth-footer p {
-  color: var(--text-dim);
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-
-.auth-switch {
-  background: none;
-  border: none;
-  color: var(--purple);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.auth-switch:hover {
-  color: var(--cyan);
-}
-
-/* Loading Screen */
-.loading-screen {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  background: var(--bg);
-  color: var(--text-dim);
-}
-
-/* User Menu */
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-left: 16px;
-  border-left: 1px solid var(--border);
-}
-
-.user-name {
-  font-size: 14px;
-  color: var(--text-dim);
-}
-
-.logout-btn {
-  padding: 8px 16px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text-dim);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.logout-btn:hover {
-  border-color: #ef4444;
-  color: #ef4444;
-}
-
-/* Add game button large */
-.add-btn-large {
-  padding: 14px 28px;
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 20px;
-  transition: all 0.2s;
-}
-
-.add-btn-large:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px var(--purple-dim);
-}
-
-/* ==================== TODAY MODAL ==================== */
-.today-modal {
-  max-width: 500px;
-  padding: 0;
-  overflow: hidden;
-}
-
-.today-modal-header {
-  text-align: center;
-  padding: 32px 24px 24px;
-  background: linear-gradient(180deg, var(--purple-dim) 0%, transparent 100%);
-}
-
-.today-modal-icon {
-  font-size: 48px;
-  display: block;
-  margin-bottom: 12px;
-}
-
-.today-modal-header h2 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.today-modal-date {
-  color: var(--purple);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.today-modal-body {
-  padding: 24px;
-}
-
-.today-events-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.today-event-card {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.today-event-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--purple);
-  transform: translateX(4px);
-}
-
-.today-event-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.today-event-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-}
-
-.today-event-game {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-dim);
-}
-
-.today-event-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.today-event-type {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--purple);
-  text-transform: uppercase;
-}
-
-.today-empty {
-  text-align: center;
-  padding: 32px 16px;
-}
-
-.today-empty-icon {
-  font-size: 48px;
-  display: block;
-  margin-bottom: 16px;
-  opacity: 0.5;
-}
-
-.today-empty p {
-  font-size: 16px;
-  color: var(--text);
-  margin-bottom: 8px;
-}
-
-.today-empty-hint {
-  font-size: 13px;
-  color: var(--text-dim);
-}
+export default App;

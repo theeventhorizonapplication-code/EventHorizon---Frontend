@@ -16,6 +16,43 @@ const SUGGESTED_GAMES = [
   { searchTerm: "Apex Legends" },
 ];
 
+// Genre list for browsing
+const GENRES = [
+  // Core
+  { slug: 'action', name: 'Action' },
+  { slug: 'role-playing-games-rpg', name: 'RPG' },
+  { slug: 'shooter', name: 'Shooter' },
+  { slug: 'strategy', name: 'Strategy' },
+  { slug: 'adventure', name: 'Adventure' },
+  { slug: 'puzzle', name: 'Puzzle' },
+  { slug: 'platformer', name: 'Platformer' },
+  { slug: 'fighting', name: 'Fighting' },
+  { slug: 'racing', name: 'Racing' },
+  { slug: 'sports', name: 'Sports' },
+  { slug: 'simulation', name: 'Simulation' },
+  { slug: 'indie', name: 'Indie' },
+  // Specific
+  { slug: 'battle-royale', name: 'Battle Royale', tag: true },
+  { slug: 'survival', name: 'Survival', tag: true },
+  { slug: 'horror', name: 'Horror', tag: true },
+  { slug: 'roguelike', name: 'Roguelike', tag: true },
+  { slug: 'massively-multiplayer', name: 'MMORPG' },
+  { slug: 'card', name: 'Card' },
+  { slug: 'moba', name: 'MOBA', tag: true },
+  { slug: 'metroidvania', name: 'Metroidvania', tag: true },
+  { slug: 'souls-like', name: 'Souls-like', tag: true },
+  { slug: 'open-world', name: 'Open World', tag: true },
+  { slug: 'tower-defense', name: 'Tower Defense', tag: true },
+  { slug: 'city-builder', name: 'City Builder', tag: true },
+  { slug: 'sandbox', name: 'Sandbox', tag: true },
+  { slug: 'co-op', name: 'Co-op', tag: true },
+  { slug: 'arcade', name: 'Arcade' },
+  { slug: 'turn-based', name: 'Turn-Based', tag: true },
+  { slug: 'real-time-strategy', name: 'RTS', tag: true },
+  { slug: 'hack-and-slash', name: 'Hack and Slash', tag: true },
+  { slug: 'dungeon-crawler', name: 'Dungeon Crawler', tag: true },
+];
+
 // ============ NAVIGATION ============
 function Navigation({ currentPage, onNavigate, onSearch, onRefresh, isRefreshing, gamesCount }) {
   const { user, logout } = useAuth();
@@ -141,8 +178,84 @@ function TodayModal({ isOpen, onClose, events, onSelectEvent }) {
   );
 }
 
+// ============ GENRE MODAL ============
+function GenreModal({ isOpen, onClose, genre, onTrack, trackedIds }) {
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen || !genre) return;
+
+    const fetchGenreGames = async () => {
+      setLoading(true);
+      setGames([]);
+      try {
+        const param = genre.tag ? 'tags' : 'genres';
+        const response = await fetch(`${API_URL}/api/games/browse?${param}=${genre.slug}`);
+        const data = await response.json();
+        setGames(data || []);
+      } catch (err) {
+        console.error('Failed to fetch genre games:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGenreGames();
+  }, [isOpen, genre]);
+
+  if (!isOpen || !genre) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content genre-modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>✕</button>
+        
+        <div className="genre-modal-header">
+          <h2>{genre.name} Games</h2>
+          <p className="genre-modal-subtitle">Popular games in this genre</p>
+        </div>
+
+        <div className="genre-modal-body">
+          {loading ? (
+            <div className="genre-loading">
+              <div className="cyber-loader"></div>
+              <span>Loading games...</span>
+            </div>
+          ) : games.length > 0 ? (
+            <div className="genre-games-grid">
+              {games.map(game => (
+                <div 
+                  key={game.id} 
+                  className={`genre-game-card ${trackedIds.includes(game.id) ? 'tracked' : ''}`}
+                  onClick={() => !trackedIds.includes(game.id) && onTrack(game)}
+                >
+                  <img src={game.background_image || '/placeholder.png'} alt={game.name} />
+                  <div className="genre-game-overlay">
+                    <span className="genre-game-name">{game.name}</span>
+                    {game.metacritic && (
+                      <span className="genre-game-score">{game.metacritic}</span>
+                    )}
+                    <span className={trackedIds.includes(game.id) ? 'badge-tracked' : 'badge-add'}>
+                      {trackedIds.includes(game.id) ? '✓ Tracked' : '+ Track'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="genre-empty">
+              <p>No games found for this genre</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============ HOME PAGE ============
-function HomePage({ onAddGame, onSearch, events, games, onSelectEvent, onShowToday }) {
+function HomePage({ onAddGame, onSearch, events, games, onSelectEvent, onShowToday, onSelectGenre }) {
   const [suggestedGames, setSuggestedGames] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -294,6 +407,25 @@ function HomePage({ onAddGame, onSearch, events, games, onSelectEvent, onShowTod
               ))}
             </div>
           )}
+        </div>
+
+        {/* Browse by Genre */}
+        <div className="genre-section">
+          <h2 className="genre-section-title">
+            <span className="pulse-dot"></span>
+            Browse by Genre
+          </h2>
+          <div className="genre-tags">
+            {GENRES.map(genre => (
+              <button 
+                key={genre.slug} 
+                className="genre-tag"
+                onClick={() => onSelectGenre(genre)}
+              >
+                {genre.name}
+              </button>
+            ))}
+          </div>
         </div>
 
         <button className="search-cta" onClick={onSearch}>
@@ -592,6 +724,7 @@ function AppContent() {
   const [currentPage, setCurrentPage] = useState('home');
   const [showSearch, setShowSearch] = useState(false);
   const [showToday, setShowToday] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState(null);
   const [selectedGame, setSelectedGame] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [loadingEvents, setLoadingEvents] = useState(false);
@@ -703,6 +836,7 @@ function AppContent() {
             games={games}
             onSelectEvent={setSelectedEvent}
             onShowToday={() => setShowToday(true)}
+            onSelectGenre={setSelectedGenre}
           />
         )}
         
@@ -732,6 +866,14 @@ function AppContent() {
         onClose={() => setShowToday(false)}
         events={events}
         onSelectEvent={setSelectedEvent}
+      />
+
+      <GenreModal
+        isOpen={!!selectedGenre}
+        onClose={() => setSelectedGenre(null)}
+        genre={selectedGenre}
+        onTrack={handleTrackGame}
+        trackedIds={games.map(g => g.game_id)}
       />
 
       <GameModal
