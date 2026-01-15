@@ -391,6 +391,17 @@ body {
 
 .htc-content {
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.htc-date {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--purple);
+  margin-bottom: 10px;
+  order: -1;
 }
 
 .htc-game {
@@ -407,25 +418,14 @@ body {
 
 .htc-title {
   display: block;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text);
-  margin-bottom: 10px;
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.htc-date {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--purple);
-  background: var(--purple-dim);
-  padding: 4px 10px;
-  border-radius: 6px;
 }
 
 .home-timeline-empty {
