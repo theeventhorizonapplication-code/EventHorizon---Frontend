@@ -294,8 +294,52 @@ body {
   text-transform: uppercase;
   letter-spacing: 2px;
   color: var(--purple);
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
   margin-bottom: 16px;
-  padding-left: 40px;
+}
+
+.today-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--purple-dim), rgba(59, 130, 246, 0.2));
+  border: 1px solid var(--purple);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.today-btn:hover {
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--purple-dim);
+}
+
+.today-btn-icon {
+  font-size: 16px;
+}
+
+.today-btn-date {
+  color: var(--text);
+}
+
+.today-btn-badge {
+  background: var(--purple);
+  color: white;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 4px;
 }
 
 .home-timeline-scroll {
@@ -1405,4 +1449,120 @@ body {
 .add-btn-large:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px var(--purple-dim);
+}
+
+/* ==================== TODAY MODAL ==================== */
+.today-modal {
+  max-width: 500px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.today-modal-header {
+  text-align: center;
+  padding: 32px 24px 24px;
+  background: linear-gradient(180deg, var(--purple-dim) 0%, transparent 100%);
+}
+
+.today-modal-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.today-modal-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.today-modal-date {
+  color: var(--purple);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.today-modal-body {
+  padding: 24px;
+}
+
+.today-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.today-event-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.today-event-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--purple);
+  transform: translateX(4px);
+}
+
+.today-event-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.today-event-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.today-event-game {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+}
+
+.today-event-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.today-event-type {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--purple);
+  text-transform: uppercase;
+}
+
+.today-empty {
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.today-empty-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.today-empty p {
+  font-size: 16px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.today-empty-hint {
+  font-size: 13px;
+  color: var(--text-dim);
 }

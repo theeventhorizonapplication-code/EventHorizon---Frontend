@@ -75,8 +75,74 @@ function Navigation({ currentPage, onNavigate, onSearch, onRefresh, isRefreshing
   );
 }
 
+// ============ TODAY MODAL ============
+function TodayModal({ isOpen, onClose, events, onSelectEvent }) {
+  if (!isOpen) return null;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const todayEvents = events.filter(event => {
+    const eventDate = new Date(event.date);
+    eventDate.setHours(0, 0, 0, 0);
+    return eventDate.getTime() === today.getTime();
+  });
+
+  const formattedDate = today.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    month: 'long', 
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content today-modal" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>✕</button>
+        
+        <div className="today-modal-header">
+          <span className="today-modal-icon">📅</span>
+          <h2>Today's Events</h2>
+          <p className="today-modal-date">{formattedDate}</p>
+        </div>
+
+        <div className="today-modal-body">
+          {todayEvents.length > 0 ? (
+            <div className="today-events-list">
+              {todayEvents.map(event => (
+                <div 
+                  key={event.id || event.steam_gid} 
+                  className="today-event-card"
+                  onClick={() => { onSelectEvent(event); onClose(); }}
+                >
+                  {event.gameImage && (
+                    <img src={event.gameImage} alt="" className="today-event-image" />
+                  )}
+                  <div className="today-event-info">
+                    <span className="today-event-game">{event.gameName || event.game_name}</span>
+                    <span className="today-event-title">{event.title}</span>
+                    <span className="today-event-type" data-type={event.type}>
+                      {event.type?.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="today-empty">
+              <span className="today-empty-icon">🎮</span>
+              <p>No events scheduled for today</p>
+              <span className="today-empty-hint">Check back tomorrow or browse your timeline!</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============ HOME PAGE ============
-function HomePage({ onAddGame, onSearch, events, games, onSelectEvent }) {
+function HomePage({ onAddGame, onSearch, events, games, onSelectEvent, onShowToday }) {
   const [suggestedGames, setSuggestedGames] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -116,9 +182,24 @@ function HomePage({ onAddGame, onSearch, events, games, onSelectEvent }) {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  const getEventIcon = (type) => {
-    const icons = { patch: '🔧', update: '⬆️', season: '🎬', expansion: '📦', dlc: '🎁' };
-    return icons[type] || '📌';
+  // Get today's date formatted
+  const getTodayFormatted = () => {
+    return new Date().toLocaleDateString('en-US', { 
+      weekday: 'short',
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  // Count today's events
+  const getTodayEventCount = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return events.filter(event => {
+      const eventDate = new Date(event.date);
+      eventDate.setHours(0, 0, 0, 0);
+      return eventDate.getTime() === today.getTime();
+    }).length;
   };
 
   return (
@@ -144,7 +225,16 @@ function HomePage({ onAddGame, onSearch, events, games, onSelectEvent }) {
         {/* Timeline */}
         {games.length > 0 && (
           <div className="home-timeline">
-            <h3 className="home-timeline-title">Your Timeline</h3>
+            <div className="timeline-header">
+              <h3 className="home-timeline-title">Your Timeline</h3>
+              <button className="today-btn" onClick={onShowToday}>
+                <span className="today-btn-icon">📅</span>
+                <span className="today-btn-date">{getTodayFormatted()}</span>
+                {getTodayEventCount() > 0 && (
+                  <span className="today-btn-badge">{getTodayEventCount()}</span>
+                )}
+              </button>
+            </div>
             {events.length > 0 ? (
               <div className="home-timeline-scroll">
                 {events.slice(0, 20).map(event => (
@@ -501,6 +591,7 @@ function AppContent() {
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState('home');
   const [showSearch, setShowSearch] = useState(false);
+  const [showToday, setShowToday] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [loadingEvents, setLoadingEvents] = useState(false);
@@ -611,6 +702,7 @@ function AppContent() {
             events={events}
             games={games}
             onSelectEvent={setSelectedEvent}
+            onShowToday={() => setShowToday(true)}
           />
         )}
         
@@ -633,6 +725,13 @@ function AppContent() {
         onClose={() => setShowSearch(false)}
         onTrack={handleTrackGame}
         trackedIds={games.map(g => g.game_id)}
+      />
+
+      <TodayModal
+        isOpen={showToday}
+        onClose={() => setShowToday(false)}
+        events={events}
+        onSelectEvent={setSelectedEvent}
       />
 
       <GameModal
