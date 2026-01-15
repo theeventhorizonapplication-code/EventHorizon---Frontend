@@ -164,10 +164,10 @@ function HomePage({ onAddGame, onSearch, events, games, onSelectEvent }) {
                       </span>
                     </div>
                     <div className="htc-content">
-                      <span className="htc-game">{event.gameName || event.game_name}</span>
-                      <span className="htc-title">{event.title}</span>
-                      <span className="htc-date">{formatDate(event.date)}</span>
-                    </div>
+  <span className="htc-date">{formatDate(event.date)}</span>
+  <span className="htc-game">{event.gameName || event.game_name}</span>
+  <span className="htc-title">{event.title}</span>
+</div>
                   </div>
                 ))}
               </div>
