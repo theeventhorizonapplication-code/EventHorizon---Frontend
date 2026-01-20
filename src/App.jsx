@@ -66,11 +66,11 @@ function Navigation({ currentPage, onNavigate, onSearch, onRefresh, isRefreshing
         </div>
         
         <nav className="header-nav">
-          <button 
+          <button
             className={`nav-btn ${currentPage === 'home' ? 'active' : ''}`}
             onClick={() => onNavigate('home')}
           >
-            Home
+            Timeline
           </button>
           <button 
             className={`nav-btn ${currentPage === 'mygames' ? 'active' : ''}`}
