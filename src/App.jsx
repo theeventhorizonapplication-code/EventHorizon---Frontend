@@ -723,6 +723,156 @@ function CalendarPage({ events, onSelectEvent }) {
   );
 }
 
+// ============ ONBOARDING PAGE ============
+function OnboardingPage({ onComplete }) {
+  const [selectedGames, setSelectedGames] = useState([]);
+  const [suggestedGames, setSuggestedGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      const fetchedGames = [];
+      const popularGames = [
+        "Path of Exile 2", "Diablo IV", "Counter-Strike 2", "Destiny 2",
+        "Elden Ring", "Apex Legends", "Fortnite", "League of Legends",
+        "Valorant", "Minecraft", "Call of Duty", "Baldur's Gate 3"
+      ];
+
+      for (const searchTerm of popularGames) {
+        try {
+          const response = await fetch(`${API_URL}/api/games?search=${encodeURIComponent(searchTerm)}`);
+          const data = await response.json();
+          if (data && data.length > 0) {
+            fetchedGames.push(data[0]);
+          }
+        } catch (err) {
+          console.error('Failed to fetch:', err);
+        }
+      }
+      setSuggestedGames(fetchedGames);
+      setLoading(false);
+    };
+    fetchSuggestions();
+  }, []);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+
+    setSearching(true);
+    try {
+      const response = await fetch(`${API_URL}/api/games?search=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      setSearchResults(data || []);
+    } catch (err) {
+      console.error('Search failed:', err);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const toggleGame = (game) => {
+    setSelectedGames(prev => {
+      const isSelected = prev.some(g => g.id === game.id);
+      if (isSelected) {
+        return prev.filter(g => g.id !== game.id);
+      } else {
+        return [...prev, game];
+      }
+    });
+  };
+
+  const isSelected = (gameId) => selectedGames.some(g => g.id === gameId);
+
+  const handleComplete = async () => {
+    if (selectedGames.length === 0) return;
+    setSubmitting(true);
+    await onComplete(selectedGames);
+    setSubmitting(false);
+  };
+
+  const allGames = searchResults.length > 0 ? searchResults : suggestedGames;
+
+  return (
+    <div className="onboarding-page">
+      <div className="cyber-bg"></div>
+      <div className="grid-overlay"></div>
+
+      <div className="onboarding-content">
+        <div className="onboarding-header">
+          <span className="onboarding-icon">🎮</span>
+          <h1>What games do you care about?</h1>
+          <p>Select the games you want to track. You can always add more later.</p>
+        </div>
+
+        <form onSubmit={handleSearch} className="onboarding-search">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search for a game..."
+          />
+          <button type="submit" disabled={searching}>
+            {searching ? 'Searching...' : 'Search'}
+          </button>
+        </form>
+
+        {searchResults.length > 0 && (
+          <button className="clear-search" onClick={() => setSearchResults([])}>
+            ← Back to popular games
+          </button>
+        )}
+
+        <div className="onboarding-games">
+          {loading ? (
+            <div className="onboarding-loading">
+              <div className="cyber-loader"></div>
+              <span>Loading popular games...</span>
+            </div>
+          ) : (
+            <div className="onboarding-grid">
+              {allGames.map(game => (
+                <div
+                  key={game.id}
+                  className={`onboarding-card ${isSelected(game.id) ? 'selected' : ''}`}
+                  onClick={() => toggleGame(game)}
+                >
+                  <img src={game.background_image || '/placeholder.png'} alt={game.name} />
+                  <div className="onboarding-card-overlay">
+                    <span className="onboarding-card-name">{game.name}</span>
+                    <span className="onboarding-card-check">
+                      {isSelected(game.id) ? '✓' : '+'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {selectedGames.length > 0 && (
+          <div className="onboarding-footer">
+            <div className="selected-count">
+              {selectedGames.length} game{selectedGames.length !== 1 ? 's' : ''} selected
+            </div>
+            <button
+              className="onboarding-submit"
+              onClick={handleComplete}
+              disabled={submitting}
+            >
+              {submitting ? 'Adding games...' : 'Continue →'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ============ SEARCH MODAL ============
 function SearchModal({ isOpen, onClose, onTrack, trackedIds }) {
   const [query, setQuery] = useState('');
@@ -860,6 +1010,7 @@ function AppContent() {
   
   const [games, setGames] = useState([]);
   const [events, setEvents] = useState([]);
+  const [gamesLoaded, setGamesLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [showSearch, setShowSearch] = useState(false);
   const [showToday, setShowToday] = useState(false);
@@ -884,6 +1035,8 @@ function AppContent() {
       setGames(data);
     } catch (err) {
       console.error('Failed to fetch games:', err);
+    } finally {
+      setGamesLoaded(true);
     }
   };
 
@@ -937,6 +1090,22 @@ function AppContent() {
     }
   };
 
+  const handleOnboardingComplete = async (selectedGames) => {
+    for (const game of selectedGames) {
+      try {
+        await authFetch('/api/user/games', {
+          method: 'POST',
+          body: { game }
+        });
+      } catch (err) {
+        console.error('Failed to add game:', err);
+      }
+    }
+    await fetchGames();
+    await fetchTimeline();
+    setCurrentPage('mygames');
+  };
+
   // Show loading
   if (loading) {
     return (
@@ -953,6 +1122,11 @@ function AppContent() {
       return <LoginPage onSwitchToRegister={() => setAuthPage('register')} onSuccess={() => {}} />;
     }
     return <RegisterPage onSwitchToLogin={() => setAuthPage('login')} onSuccess={() => {}} />;
+  }
+
+  // Show onboarding for new users with no games
+  if (gamesLoaded && games.length === 0) {
+    return <OnboardingPage onComplete={handleOnboardingComplete} />;
   }
 
   return (
