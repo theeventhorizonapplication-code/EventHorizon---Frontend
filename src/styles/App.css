@@ -1605,6 +1605,56 @@ body {
   color: var(--cyan);
 }
 
+/* Guest Button */
+.guest-btn {
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.guest-btn:hover:not(:disabled) {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(34, 211, 238, 0.1);
+}
+
+.guest-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.guest-hint {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
 /* Loading Screen */
 .loading-screen {
   min-height: 100vh;

@@ -103,6 +103,28 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  // Guest login - creates a new guest session each time
+  const loginAsGuest = async () => {
+    // Clear any existing guest data
+    localStorage.removeItem('token');
+
+    const response = await fetch(`${API_URL}/api/auth/guest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Guest login failed');
+    }
+
+    localStorage.setItem('token', data.token);
+    setToken(data.token);
+    setUser(data.user);
+    return data;
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
@@ -139,6 +161,7 @@ export function AuthProvider({ children }) {
       login,
       register,
       loginWithGoogle,
+      loginAsGuest,
       logout,
       authFetch
     }}>

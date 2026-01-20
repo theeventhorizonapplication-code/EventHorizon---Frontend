@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
 export default function LoginPage({ onSwitchToRegister, onSuccess }) {
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, loginAsGuest } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
 
   // Initialize Google Sign-In
   useEffect(() => {
@@ -75,6 +76,20 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     }
   };
 
+  const handleGuestLogin = async () => {
+    setError('');
+    setGuestLoading(true);
+
+    try {
+      await loginAsGuest();
+      onSuccess?.();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setGuestLoading(false);
+    }
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -123,6 +138,19 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+
+        <div className="auth-divider">
+          <span>or</span>
+        </div>
+
+        <button
+          onClick={handleGuestLogin}
+          className="guest-btn"
+          disabled={guestLoading}
+        >
+          {guestLoading ? 'Starting guest session...' : 'Continue as Guest'}
+        </button>
+        <p className="guest-hint">Try the app without creating an account</p>
 
         <div className="auth-footer">
           <p>Don't have an account?</p>
