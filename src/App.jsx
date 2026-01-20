@@ -321,6 +321,15 @@ function HomePage({ onAddGame, onSearch, events, games, onSelectEvent, onShowTod
     }).length;
   };
 
+  // Filter events: only show events from last 6 months and any future events
+  const filteredEvents = events.filter(event => {
+    const eventDate = new Date(event.date);
+    const now = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    return eventDate >= sixMonthsAgo;
+  });
+
   return (
     <div className="home-page">
       <div className="cyber-bg"></div>
@@ -354,9 +363,9 @@ function HomePage({ onAddGame, onSearch, events, games, onSelectEvent, onShowTod
                 )}
               </button>
             </div>
-            {events.length > 0 ? (
+            {filteredEvents.length > 0 ? (
               <div className="home-timeline-scroll">
-                {events.slice(0, 20).map(event => (
+                {filteredEvents.slice(0, 20).map(event => (
                   <div 
                     key={event.id || event.steam_gid} 
                     className="home-timeline-card"
