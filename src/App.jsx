@@ -78,11 +78,17 @@ function Navigation({ currentPage, onNavigate, onSearch, onRefresh, isRefreshing
           >
             Your Games {gamesCount > 0 && <span className="nav-badge">{gamesCount}</span>}
           </button>
-          <button 
+          <button
             className={`nav-btn ${currentPage === 'about' ? 'active' : ''}`}
             onClick={() => onNavigate('about')}
           >
             About
+          </button>
+          <button
+            className={`nav-btn ${currentPage === 'calendar' ? 'active' : ''}`}
+            onClick={() => onNavigate('calendar')}
+          >
+            Calendar
           </button>
         </nav>
       </div>
@@ -584,6 +590,139 @@ function AboutPage() {
   );
 }
 
+// ============ CALENDAR PAGE ============
+function CalendarPage({ events, onSelectEvent }) {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  // Get first day of month and total days
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Navigate months
+  const goToPrevMonth = () => {
+    setCurrentDate(new Date(year, month - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentDate(new Date(year, month + 1, 1));
+  };
+
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
+
+  // Get events for a specific day
+  const getEventsForDay = (day) => {
+    return events.filter(event => {
+      const eventDate = new Date(event.date);
+      return (
+        eventDate.getFullYear() === year &&
+        eventDate.getMonth() === month &&
+        eventDate.getDate() === day
+      );
+    });
+  };
+
+  // Check if a day is today
+  const isToday = (day) => {
+    const today = new Date();
+    return (
+      today.getFullYear() === year &&
+      today.getMonth() === month &&
+      today.getDate() === day
+    );
+  };
+
+  // Get event type icon
+  const getEventIcon = (type) => {
+    const icons = { patch: '🔧', update: '⬆️', season: '🎬', expansion: '📦', dlc: '🎁' };
+    return icons[type] || '📌';
+  };
+
+  // Build calendar grid
+  const calendarDays = [];
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDayOfMonth; i++) {
+    calendarDays.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+  }
+
+  // Days of the month
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayEvents = getEventsForDay(day);
+    const hasEvents = dayEvents.length > 0;
+
+    calendarDays.push(
+      <div
+        key={day}
+        className={`calendar-day ${isToday(day) ? 'today' : ''} ${hasEvents ? 'has-events' : ''}`}
+      >
+        <span className="day-number">{day}</span>
+        {hasEvents && (
+          <div className="day-events">
+            {dayEvents.slice(0, 3).map((event, idx) => (
+              <div
+                key={event.id || idx}
+                className="day-event"
+                data-type={event.type}
+                onClick={() => onSelectEvent(event)}
+                title={`${event.gameName || event.game_name}: ${event.title}`}
+              >
+                <span className="day-event-icon">{getEventIcon(event.type)}</span>
+                <span className="day-event-title">{event.title}</span>
+              </div>
+            ))}
+            {dayEvents.length > 3 && (
+              <div className="day-events-more">+{dayEvents.length - 3} more</div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="calendar-page">
+      <div className="calendar-container">
+        <div className="calendar-header">
+          <button className="calendar-nav-btn" onClick={goToPrevMonth}>←</button>
+          <div className="calendar-title">
+            <h2>{monthNames[month]} {year}</h2>
+            <button className="calendar-today-btn" onClick={goToToday}>Today</button>
+          </div>
+          <button className="calendar-nav-btn" onClick={goToNextMonth}>→</button>
+        </div>
+
+        <div className="calendar-weekdays">
+          {daysOfWeek.map(day => (
+            <div key={day} className="calendar-weekday">{day}</div>
+          ))}
+        </div>
+
+        <div className="calendar-grid">
+          {calendarDays}
+        </div>
+      </div>
+
+      {events.length === 0 && (
+        <div className="calendar-empty">
+          <p>No events to display. Add some games and discover events!</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ============ SEARCH MODAL ============
 function SearchModal({ isOpen, onClose, onTrack, trackedIds }) {
   const [query, setQuery] = useState('');
@@ -852,6 +991,13 @@ function AppContent() {
         )}
         
         {currentPage === 'about' && <AboutPage />}
+
+        {currentPage === 'calendar' && (
+          <CalendarPage
+            events={events}
+            onSelectEvent={setSelectedEvent}
+          />
+        )}
       </main>
 
       <SearchModal

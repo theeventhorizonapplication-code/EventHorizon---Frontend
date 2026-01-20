@@ -1781,3 +1781,235 @@ body {
   font-size: 13px;
   color: var(--text-dim);
 }
+
+/* ==================== CALENDAR PAGE ==================== */
+.calendar-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.calendar-container {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.calendar-nav-btn {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-nav-btn:hover {
+  background: var(--purple-dim);
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.calendar-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.calendar-title h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.calendar-today-btn {
+  padding: 8px 16px;
+  background: var(--purple-dim);
+  border: 1px solid var(--purple);
+  border-radius: 8px;
+  color: var(--purple);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-today-btn:hover {
+  background: var(--purple);
+  color: white;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.calendar-weekday {
+  padding: 12px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-day {
+  min-height: 120px;
+  padding: 8px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.calendar-day:nth-child(7n) {
+  border-right: none;
+}
+
+.calendar-day.empty {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day:hover:not(.empty) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.calendar-day.today {
+  background: var(--purple-dim);
+}
+
+.calendar-day.today .day-number {
+  background: var(--purple);
+  color: white;
+}
+
+.calendar-day.has-events {
+  background: rgba(168, 85, 247, 0.05);
+}
+
+.day-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  border-radius: 50%;
+  margin-bottom: 6px;
+}
+
+.day-events {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day-event {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.day-event:hover {
+  background: var(--purple-dim);
+  transform: translateX(2px);
+}
+
+.day-event[data-type="patch"] {
+  border-left: 3px solid #a855f7;
+}
+
+.day-event[data-type="update"] {
+  border-left: 3px solid #8b5cf6;
+}
+
+.day-event[data-type="season"] {
+  border-left: 3px solid #22d3ee;
+}
+
+.day-event[data-type="dlc"],
+.day-event[data-type="expansion"] {
+  border-left: 3px solid #ec4899;
+}
+
+.day-event-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.day-event-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.day-events-more {
+  font-size: 10px;
+  color: var(--purple);
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+.calendar-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-dim);
+  margin-top: 24px;
+}
+
+/* Calendar Responsive */
+@media (max-width: 768px) {
+  .calendar-day {
+    min-height: 80px;
+    padding: 4px;
+  }
+
+  .day-number {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  .day-event {
+    padding: 4px 6px;
+  }
+
+  .day-event-title {
+    display: none;
+  }
+
+  .calendar-title h2 {
+    font-size: 18px;
+  }
+}
